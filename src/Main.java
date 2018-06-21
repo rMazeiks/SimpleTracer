@@ -15,7 +15,7 @@ public class Main extends Application {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage)  {
 
 		Image image = new Image("test/1.png");
 		ImageView i = new ImageView(image);

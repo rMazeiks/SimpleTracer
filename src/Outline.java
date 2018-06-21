@@ -27,6 +27,7 @@ public class Outline extends ArrayList<Point2D> implements Surface {
 	}
 
 	@Override
+	@Deprecated
 	public boolean isOnSurface(Point2D point) {
 		/*
 		A point is on the surface if and only if there is an odd number of intersections when we addPoint a ray in some direction.

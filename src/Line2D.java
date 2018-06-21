@@ -115,6 +115,7 @@ public class Line2D {
 	 * @param y
 	 * @return
 	 */
+	@Deprecated
 	boolean intersectsHorizontalRay(double x, double y) {
 		double smallY, x1;
 		double largeY, x2;

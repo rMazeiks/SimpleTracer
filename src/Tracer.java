@@ -9,11 +9,11 @@ import static java.lang.Math.*;
 
 public class Tracer {
 	private double level = 0.9; // threshold of what's considered black/white
-	private double length = 4; // length of each segment
+	private double length = 3; // length of each segment
 	private double accuracy = 0.01; // angle accuracy in radians.
 	private double deviation = PI / 2; // max deviation from direction at each step (determines the sharpest angle of a turn the tracer can make while tracing) in rad
 	private int safe = 1; // additional pixels checked (imaginary extension of segment)
-	private int ignore = 3;// ignore first few pixels of the segment when checking if they touck black pixels.
+	private int ignore = 2;// ignore first few pixels of the segment when checking if they touck black pixels.
 
 	public ArrayList<Outline> traceAllOutlines(Image image) {
 		ArrayList<Outline> outlines = new ArrayList<Outline>();
@@ -105,7 +105,7 @@ public class Tracer {
 		return hypot(
 				tracer.getX() - first.getX(),
 				tracer.getY() - first.getY()
-		) < length * 1.1; // multiplication for safety
+		) < length * 1.8; // multiplication for safety
 	}
 
 	/**

@@ -22,26 +22,30 @@ public class Tracer {
 
 		int count = 0;
 		for (int y = 0; y < image.getHeight(); y++) {
+			IntersectionRow intersectionRow = new IntersectionRow();
+			for (Outline o : outlines) {
+				intersectionRow.process(o, y);
+			}
 			horizontal:
 			for (int x = 0; x < image.getWidth(); x++) {
 				boolean black = false;
 				Color color = reader.getColor(x, y);
 				if (color.getBrightness() < level) black = true;
 
-				boolean inside = false;
+				boolean inside = intersectionRow.intersectionsAfter(x) % 2 == 1;
 				for (Outline o : outlines) { //check if we are inside a traced area
 					if (o.isNearBorder(new Point2D(x, y), length * 3)) continue horizontal;
 					/*
 					The tolerance in the line above had to be this large because the tracer would otherwise get stuck.
 					For example, if there is a very sharp v-shape, the tracer
 					 */
-
-					if (o.isOnSurface(new Point2D(x, y))) inside = !inside;
 				}
 
 				if (black != inside) { // either we are outside, and found a black pixel, or we are inside, and found a white pixel. Like XOR
 					System.out.println("tracing...");
-					outlines.add(traceOutline(new Point2D(x, y), image, black));
+					Outline outline = traceOutline(new Point2D(x, y), image, black);
+					outlines.add(outline);
+					intersectionRow.process(outline, y);
 					count++;
 					System.out.println("traced");
 				}

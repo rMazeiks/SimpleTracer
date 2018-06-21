@@ -44,7 +44,12 @@ public class Main extends Application {
 
 	private ArrayList<Outline> trace(Image image) {
 		Tracer tracer = new Tracer();
-
-		return tracer.traceAllOutlines(image);
+		long millis = System.currentTimeMillis();
+		ArrayList<Outline> ans = null;
+		for (int i = 0; i < 4; i++) {
+			ans = tracer.traceAllOutlines(image);
+		}
+		System.out.println(System.currentTimeMillis()-millis);
+		return ans;
 	}
 }

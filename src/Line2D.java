@@ -1,8 +1,5 @@
-
 import javafx.geometry.Point2D;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 
 public class Line2D {
 	public Point2D getFrom() {
@@ -140,8 +137,41 @@ public class Line2D {
 
 		double fraction = (y - smallY) / (largeY - smallY);  // maps smallY-largeY to 0-1
 		double intersectX = (x2 - x1) * fraction + x1; // maps 0-1 to x1-x2
-		if(intersectX<x) return false; // intersects to the left of the ray; no good
+		if (intersectX < x) return false; // intersects to the left of the ray; no good
 
 		return true;
+	}
+
+	/**
+	 * Returns -1 if the line does not intersect at a positive value.
+	 * Otherwise, returns the x-coordinate where this segment intersects with the line of the specified y-value
+	 *
+	 * @param y
+	 * @return
+	 */
+	double findHorizontalIntersection(double y) {
+		double smallY, x1;
+		double largeY, x2;
+
+		if (from.getY() < to.getY()) {
+			smallY = from.getY();
+			x1 = from.getX();
+
+			largeY = to.getY();
+			x2 = to.getX();
+		} else {
+			smallY = to.getY();
+			x1 = to.getX();
+
+			largeY = from.getY();
+			x2 = from.getX();
+		}
+
+		if (y <= smallY || y > largeY) return -1; // outside of bounds
+
+		double fraction = (y - smallY) / (largeY - smallY);  // maps smallY-largeY to 0-1
+		double intersectX = (x2 - x1) * fraction + x1; // maps 0-1 to x1-x2
+
+		return intersectX;
 	}
 }

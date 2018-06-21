@@ -9,11 +9,11 @@ import static java.lang.Math.*;
 
 public class Tracer {
 	private double level = 0.9; // threshold of what's considered black/white
-	private double length = 3; // length of each segment
+	private double length = 4; // length of each segment
 	private double accuracy = 0.01; // angle accuracy in radians.
 	private double deviation = PI / 2; // max deviation from direction at each step (determines the sharpest angle of a turn the tracer can make while tracing) in rad
 	private int safe = 1; // additional pixels checked (imaginary extension of segment)
-	private int ignore = 2;// ignore first few pixels of the segment when checking if they touck black pixels.
+	private int ignore = 3;// ignore first few pixels of the segment when checking if they touck black pixels.
 
 	public ArrayList<Outline> traceAllOutlines(Image image) {
 		ArrayList<Outline> outlines = new ArrayList<Outline>();
@@ -34,7 +34,7 @@ public class Tracer {
 
 				boolean inside = intersectionRow.intersectionsAfter(x) % 2 == 1;
 				for (Outline o : outlines) { //check if we are inside a traced area
-					if (o.isNearBorder(new Point2D(x, y), length * 3)) continue horizontal;
+					if (o.isNearBorder(x,y, length * 3)) continue horizontal;
 					/*
 					The tolerance in the line above had to be this large because the tracer would otherwise get stuck.
 					For example, if there is a very sharp v-shape, the tracer
@@ -177,6 +177,7 @@ public class Tracer {
 		return true;
 	}
 
+	@Deprecated
 	private Point2D findIsland(Image image, PixelReader reader) {
 		for (int y = 0; y < image.getHeight(); y++) {
 			for (int x = 0; x < image.getWidth(); x++) {

@@ -3,23 +3,30 @@ import javafx.geometry.Point2D;
 import java.util.ArrayList;
 
 public class Outline extends ArrayList<Point2D> implements Surface {
+	Line2D edgesCache[];
+	boolean edgesCacheValid = false;
+
 	public Outline() {
 		super();
 	}
 
 	public boolean addPoint(Point2D point2D) {
+		edgesCacheValid = false;
 		return super.add(point2D);
 		//return super.add(new Point2D(point2D.getX(), point2D.getY()));
 	}
 
 	public Line2D[] getEdges() {
-		Line2D edges[] = new Line2D[this.size()];
+		if (edgesCacheValid) return edgesCache;
+
+		edgesCache = new Line2D[this.size()];
 		for (int i = 0; i < this.size(); i++) {
 			Point2D p1 = this.get(i);
 			Point2D p2 = this.get((i + 1) % this.size());
-			edges[i] = new Line2D(p1, p2);
+			edgesCache[i] = new Line2D(p1, p2);
 		}
-		return edges;
+		edgesCacheValid = true;
+		return edgesCache;
 	}
 
 	public Point2D first() {
@@ -41,11 +48,11 @@ public class Outline extends ArrayList<Point2D> implements Surface {
 	}
 
 	@Override
-	public boolean isNearBorder(Point2D point, double tolerance) {
-		for(Point2D vertex: this)  {
-			if(Math.abs(vertex.getX()-point.getX())
-					+Math.abs(vertex.getY()-point.getY())
-					<tolerance) return true; // close by manhattan distance (approximations are OK)
+	public boolean isNearBorder(double x, double y, double tolerance) {
+		for (Point2D vertex : this) {
+			if (Math.abs(vertex.getX() - x)
+					+ Math.abs(vertex.getY() - y)
+					< tolerance) return true; // close by manhattan distance (approximations are OK)
 		}
 		return false;
 	}

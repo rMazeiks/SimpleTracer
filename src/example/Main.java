@@ -1,3 +1,7 @@
+package example;
+
+import geometry.Polygon;
+import geometry.Tracer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
@@ -15,7 +19,7 @@ public class Main extends Application {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage)  {
 
 		Image image = new Image("test/1.png");
 		ImageView i = new ImageView(image);
@@ -29,10 +33,10 @@ public class Main extends Application {
 		parent.setPannable(true);
 //		parent.setPrefSize(800, 600);
 
-		ArrayList<Outline> outlines = trace(image);
+		ArrayList<Polygon> polygons = trace(image);
 
 		Overlay overlay = new Overlay(image);
-		overlay.render(outlines);
+		overlay.render(polygons);
 		stackPane.getChildren().add(overlay);
 
 		Scene scene = new Scene(parent);
@@ -42,9 +46,14 @@ public class Main extends Application {
 
 	}
 
-	private ArrayList<Outline> trace(Image image) {
+	private ArrayList<Polygon> trace(Image image) {
 		Tracer tracer = new Tracer();
-
-		return tracer.traceAllOutlines(image);
+		long millis = System.currentTimeMillis();
+		ArrayList<Polygon> ans = null;
+	//	for (int i = 0; i < 4; i++) {
+			ans = tracer.traceAllOutlines(image);
+		//}
+		System.out.println(System.currentTimeMillis()-millis);
+		return ans;
 	}
 }

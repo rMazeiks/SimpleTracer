@@ -1,8 +1,10 @@
+package example;
+
+import geometry.Polygon;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -16,12 +18,12 @@ public class Overlay extends Canvas {
 		graphics.setStroke(Color.color(1, 0.2, 0));
 	}
 
-	public void render(ArrayList<Outline> outlines) {
-		for(Outline outline: outlines) {
-			Point2D first = outline.get(0);
+	public void render(ArrayList<Polygon> polygons) {
+		for(Polygon polygon : polygons) {
+			Point2D first = polygon.get(0);
 			graphics.moveTo(first.getX(), first.getY());
 			graphics.beginPath();
-			for (javafx.geometry.Point2D point : outline) {
+			for (javafx.geometry.Point2D point : polygon) {
 				graphics.lineTo(point.getX(), point.getY());
 			}
 			graphics.closePath();
@@ -35,7 +37,7 @@ public class Overlay extends Canvas {
 //		PixelWriter writer = graphics.getPixelWriter();
 //		for (int y = 0; y < this.getHeight(); y++) {
 //			for (int x = 0; x <this.getWidth(); x++) {
-//				if(outlines.get(0).isNearBorder(new Point2D(x, y), 5))
+//				if(polygons.get(0).isNearBorder(new Point2D(x, y), 5))
 //					writer.setColor(x, y, Color.color(0, 1, 0.2));
 //			}
 //		}

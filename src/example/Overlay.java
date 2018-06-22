@@ -20,7 +20,7 @@ public class Overlay extends Canvas {
 
 	public void render(ArrayList<Polygon> polygons) {
 		for(Polygon polygon : polygons) {
-			polygon = polygon.offset(10);
+//			polygon = polygon.offset(10);
 			Point2D first = polygon.get(0);
 			graphics.moveTo(first.getX(), first.getY());
 			graphics.beginPath();
@@ -30,9 +30,6 @@ public class Overlay extends Canvas {
 			graphics.closePath();
 
 			graphics.stroke();
-
-			//debug test
-			//graphics.strokeLine(0, 0, getWidth() / 2, getHeight() / 2);
 		}
 
 //		PixelWriter writer = graphics.getPixelWriter();

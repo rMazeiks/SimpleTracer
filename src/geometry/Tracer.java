@@ -219,14 +219,14 @@ public class Tracer {
 			// x = my + c
 			double offset = start.getX() - slope * start.getY(); // this is the c
 			if (dy > 0) { // goin' down
-				for (double y = start.getY() + ignoredPixels.get(); y <= start.getY() + dy * length + additionalPixels.get(); y++) {
+				for (double y = start.getY() + ignoredPixels.get()*dy; y <= start.getY() + dy * length + additionalPixels.get(); y++) {
 					double x = slope * y + offset;
 					if (inBounds(x, y, image) && reader.getColor((int) x, (int) y).getBrightness() < threshold.get()) {
 						return true;
 					}
 				}
 			} else { // goin' up
-				for (double y = start.getY() - ignoredPixels.get(); y >= start.getY() + dy * length - additionalPixels.get(); y--) {
+				for (double y = start.getY() + ignoredPixels.get()*dy; y >= start.getY() + dy * length - additionalPixels.get(); y--) {
 					double x = slope * y + offset;
 					if (inBounds(x, y, image) && reader.getColor((int) x, (int) y).getBrightness() < threshold.get()) {
 						return true;
@@ -238,7 +238,7 @@ public class Tracer {
 			// y = mx + c
 			double offset = start.getY() - slope * start.getX(); // this is the c
 			if (dx > 0) { // goin' right
-				for (double x = start.getX() + ignoredPixels.get();
+				for (double x = start.getX() + ignoredPixels.get()*dx;
 					 x <= start.getX() + dx * length + additionalPixels.get();
 					 x++) {
 					double y = slope * x + offset;
@@ -248,7 +248,7 @@ public class Tracer {
 					}
 				}
 			} else { // goin' left
-				for (double x = start.getX() - ignoredPixels.get(); x >= start.getX() + dx * length - additionalPixels.get(); x--) {
+				for (double x = start.getX() + ignoredPixels.get()*dx; x >= start.getX() + dx * length - additionalPixels.get(); x--) {
 					double y = slope * x + offset;
 					if (inBounds(x, y, image) && reader.getColor((int) x, (int) y).getBrightness() < threshold.get()) {
 						return true;

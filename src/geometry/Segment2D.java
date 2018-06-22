@@ -1,43 +1,34 @@
+package geometry;
+
 import javafx.geometry.Point2D;
-import static java.lang.Math.*;
 
-public class Line2D {
-	public Point2D getFrom() {
-		return from;
-	}
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
-	public void setFrom(Point2D from) {
-		this.from = from;
-	}
-
-	public Point2D getTo() {
-		return to;
-	}
-
-	public void setTo(Point2D to) {
-		this.to = to;
-	}
-
+public class Segment2D {
+	/**
+	 * The starting point of the segment
+	 */
 	private Point2D from;
+	/**
+	 * The ending point of the segment
+	 */
 	private Point2D to;
 
-	public Line2D(Point2D from, Point2D to) {
+	/**
+	 * Creates a segment that starts and ends at the points specified.
+	 *
+	 * @param from the starting point
+	 * @param to   the ending point
+	 */
+	public Segment2D(Point2D from, Point2D to) {
 		this.from = from;
 		this.to = to;
 	}
-
-	public double length() {
-		return from.distance(to);
-	}
-
-	/*
-	Translated from C++ here
-	https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
-	 */
 
 	/**
 	 * Given three colinear points p, q, r, the function checks if
-	 * point q lies on line segment 'pr'
+	 * point q lies on segment segment 'pr'
 	 *
 	 * @param p
 	 * @param q
@@ -56,7 +47,6 @@ public class Line2D {
 	 * 1 --> Clockwise
 	 * 2 --> Counterclockwise
 	 */
-
 	private static int orientation(Point2D p, Point2D q, Point2D r) {
 		// See https://www.geeksforgeeks.org/orientation-3-ordered-points/
 		// for details of below formula.
@@ -69,11 +59,61 @@ public class Line2D {
 	}
 
 	/**
-	 * The main function that returns true if line segment 'p1q1'
-	 * and 'p2q2' intersect.
+	 * Returns the starting point of the segment
+	 *
+	 * @return the starting point
 	 */
+	public Point2D getFrom() {
+		return from;
+	}
 
-	public boolean intersects(Line2D other) {
+	/**
+	 * Sets the starting point of the segment
+	 *
+	 * @param from the point to use as the starting point
+	 */
+	public void setFrom(Point2D from) {
+		this.from = from;
+	}
+
+	/**
+	 * Returns the ending point of the segment
+	 *
+	 * @return the end point
+	 */
+	public Point2D getTo() {
+		return to;
+	}
+
+
+	/**
+	 * Sets the ending point of the segment
+	 *
+	 * @param to the point to use as the ending point
+	 */
+	public void setTo(Point2D to) {
+		this.to = to;
+	}
+
+	/**
+	 * Returns the length of the segment
+	 *
+	 * @return the length of the segment
+	 */
+	public double length() {
+		return from.distance(to);
+	}
+
+
+	/**
+	 * 
+	 * Determines whether this segment intersects with the specified segment
+	 * <p>
+	 * Translated from C++ here
+	 * https://www.geeksforgeeks.org/check-if-two-given-segment-segments-intersect/
+	 * @return  true if this segment and the specified segment intersect.
+	 */
+	public boolean intersects(Segment2D other) {
 		Point2D p1 = from;
 		Point2D q1 = to;
 		Point2D p2 = other.getFrom();
@@ -115,7 +155,6 @@ public class Line2D {
 	 * @param y
 	 * @return
 	 */
-	@Deprecated
 	boolean intersectsHorizontalRay(double x, double y) {
 		double smallY, x1;
 		double largeY, x2;
@@ -144,11 +183,11 @@ public class Line2D {
 	}
 
 	/**
-	 * Returns -1 if the line does not intersect at a positive value.
-	 * Otherwise, returns the x-coordinate where this segment intersects with the line of the specified y-value
+	 * Returns -1 if the segment does not intersect, or intersects at a negative x-value.
+	 * Otherwise, returns the x-coordinate where this segment intersects with the segment of the specified y-value
 	 *
-	 * @param y
-	 * @return
+	 * @param y the vertical position of the line
+	 * @return -1 if the segment does not intersect at a positive value, the coordinate of intersection otherwise
 	 */
 	double findHorizontalIntersection(double y) {
 		double smallY, x1;

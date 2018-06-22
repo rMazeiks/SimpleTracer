@@ -8,7 +8,7 @@ Instead of looping through all of the segments to determine whether a point is o
 Removed unnecessary Point2D object creation, replaced with double x, double y. No visible effect on the benchmarks:
 1779,  1762, 1744, 1710, 1497, 1644
 
-In class Outline, created a cache for edge calculation. I hope this is not something the Java optimizators were doing already.
+In class geometry.Polygon, created a cache for edge calculation. I hope this is not something the Java optimizators were doing already.
 1787, 1725, 1685, 1612, 2292, 1663
 It's hard to tell. Let's benchmark a more complicated image with more islands,  6.png:
 Before

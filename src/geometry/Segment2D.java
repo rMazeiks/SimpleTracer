@@ -27,6 +27,24 @@ public class Segment2D {
 	}
 
 	/**
+	 * Returns the unit vector that represents the slope of the line, i.e. the direction from the starting point to the ending point.
+	 * @return
+	 */
+	public Point2D tangentUnitVector()  {
+		Point2D answer = to.subtract(from);
+		return answer.normalize();
+	}
+
+	/**
+	 * Returns the unit vector that is perpendicular to the slope of the line, turned 90 degrees counter-clockwise.
+	 * @return
+	 */
+	public Point2D normalUnitVector()  {
+		Point2D tangent =  tangentUnitVector();
+		return new Point2D(-tangent.getY(), tangent.getX()); // rotated left 90 degrees
+	}
+
+	/**
 	 * Given three colinear points p, q, r, the function checks if
 	 * point q lies on segment segment 'pr'
 	 *

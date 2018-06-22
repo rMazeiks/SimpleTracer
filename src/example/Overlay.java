@@ -20,6 +20,7 @@ public class Overlay extends Canvas {
 
 	public void render(ArrayList<Polygon> polygons) {
 		for(Polygon polygon : polygons) {
+			polygon = polygon.offset(10);
 			Point2D first = polygon.get(0);
 			graphics.moveTo(first.getX(), first.getY());
 			graphics.beginPath();

@@ -12,6 +12,26 @@ public class Polygon extends ArrayList<Point2D> implements Surface {
 		super();
 	}
 
+	public Polygon offset(double amount)  {
+		Polygon polygon = new Polygon();
+
+		Segment2D[] edges = getEdges();
+
+		for (int i = 0; i < size(); i++) {
+			Segment2D one = edges[i];
+			Segment2D two = edges[(i+1)%size()];
+
+			Point2D d1 = one.normalUnitVector();
+			Point2D d2 = two.normalUnitVector();
+
+			Point2D direction = d1.midpoint(d2).normalize().multiply(-amount); // multiplied by a negative, to shift outwards
+
+			polygon.addPoint(get((i+1)%size()).add(direction));
+		}
+
+		return polygon;
+	}
+
 	/**
 	 * Adds the next point in this outline.
 	 * Points that represent a shape should be added in the clockwise direction, and points that represent a hole in a shape should be added counterclockwise.

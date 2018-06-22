@@ -25,7 +25,7 @@ public class Tracer {
 		threshold = new SimpleDoubleProperty(0.9);
 		segmentLength = new SimpleDoubleProperty(4);
 		accuracy = new SimpleDoubleProperty(0.01);
-		deviation = new SimpleDoubleProperty(PI / 2);
+		deviation = new SimpleDoubleProperty(PI/2);
 		additionalPixels = new SimpleIntegerProperty(1);
 		ignoredPixels = new SimpleIntegerProperty(3);
 	}
@@ -164,9 +164,11 @@ public class Tracer {
 			while (right - left > accuracy.get()) {
 				double middle = (right + left) / 2;
 				if (touchesBlack(image, reader, point, middle, segmentLength.get())) {
-					right = middle;
+					//right = middle; // actual binarysearch
+					right=(right+middle)/2; // slowed down to minimize jumping over thin lines
 				} else {
-					left = middle;
+//					left = middle; // actual binarysearch
+					left = (left+middle)/2;
 				}
 			}
 			point = new Point2D(
@@ -236,7 +238,9 @@ public class Tracer {
 			// y = mx + c
 			double offset = start.getY() - slope * start.getX(); // this is the c
 			if (dx > 0) { // goin' right
-				for (double x = start.getX() + ignoredPixels.get(); x <= start.getX() + dx * length + additionalPixels.get(); x++) {
+				for (double x = start.getX() + ignoredPixels.get();
+					 x <= start.getX() + dx * length + additionalPixels.get();
+					 x++) {
 					double y = slope * x + offset;
 					if (inBounds(x, y, image) && reader.getColor((int) x, (int) y).getBrightness() < threshold.get()) {
 

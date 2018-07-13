@@ -26,4 +26,4 @@ Reading pixels in batches (by line) instead of individually
 1548, 1558, 1558, 1695, 1551, 2186
 
 Holly shit (excuse me!). The isNearBorder method was taking a huge amount of time. Now, it is called only after other checks (that are faster) have been performed. Good results, because the method is called much less often.
-
+228, 291, 193, 198, 211, 221

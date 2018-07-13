@@ -19,7 +19,7 @@ public class Main extends Application {
 	}
 
 	@Override
-	public void start(Stage primaryStage)  {
+	public void start(Stage primaryStage) {
 
 		Image image = new Image("test/1.png");
 		ImageView i = new ImageView(image);
@@ -50,10 +50,10 @@ public class Main extends Application {
 		Tracer tracer = new Tracer();
 		long millis = System.currentTimeMillis();
 		ArrayList<Polygon> ans = null;
-		for (int i = 0; i < 4; i++) {
-			ans = tracer.traceAllOutlines(image);
-		}
-		System.out.println(System.currentTimeMillis()-millis);
+//		for (int i = 0; i < 4; i++) {
+		ans = tracer.traceAllOutlines(image);
+//		}
+		System.out.println(System.currentTimeMillis() - millis);
 		return ans;
 	}
 }

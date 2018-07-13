@@ -50,9 +50,9 @@ public class Main extends Application {
 		Tracer tracer = new Tracer();
 		long millis = System.currentTimeMillis();
 		ArrayList<Polygon> ans = null;
-	//	for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			ans = tracer.traceAllOutlines(image);
-		//}
+		}
 		System.out.println(System.currentTimeMillis()-millis);
 		return ans;
 	}

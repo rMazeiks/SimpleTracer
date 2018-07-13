@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.paint.Color;
 
@@ -19,13 +20,13 @@ public class Tracer {
 	private DoubleProperty accuracy; // angle accuracy in radians.
 	private DoubleProperty initialAngle; // max initialAngle from direction at each step (determines the sharpest angle of a turn the tracer can make while tracing) in rad
 	private IntegerProperty additionalPixels; // additional pixels checked (imaginary extension of segment)
-	private IntegerProperty ignoredPixels;// ignoredPixels first few pixels of the segment when checking if they touck black pixels.
+	private IntegerProperty ignoredPixels;// ignoredPixels first few pixels of the segment when checking if they touch black pixels.
 
 	public Tracer() {
 		threshold = new SimpleDoubleProperty(0.9);
 		segmentLength = new SimpleDoubleProperty(4);
 		accuracy = new SimpleDoubleProperty(0.01);
-		initialAngle = new SimpleDoubleProperty(PI/4);
+		initialAngle = new SimpleDoubleProperty(PI / 4);
 		additionalPixels = new SimpleIntegerProperty(1);
 		ignoredPixels = new SimpleIntegerProperty(2);
 	}
@@ -103,32 +104,45 @@ public class Tracer {
 	}
 
 	public ArrayList<Polygon> traceAllOutlines(Image image) {
-		ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+		ArrayList<Polygon> polygons = new ArrayList<>();
 
 		PixelReader reader = image.getPixelReader();
 
 		int count = 0;
+		int[] data = new int[(int) image.getWidth()];
+
 		for (int y = 0; y < image.getHeight(); y++) {
 			IntersectionRow intersectionRow = new IntersectionRow();
 			for (Polygon o : polygons) {
 				intersectionRow.process(o, y);
 			}
+
+			reader.getPixels(
+					0,
+					y,
+					(int) image.getWidth(),
+					1,
+					PixelFormat.getIntArgbInstance(),
+					data,
+					0,
+					1);
+
 			horizontal:
 			for (int x = 0; x < image.getWidth(); x++) {
 				boolean black = false;
-				Color color = reader.getColor(x, y);
-				if (color.getBrightness() < threshold.get()) black = true;
+				if (brightness(data[x]) < threshold.get()) black = true;
 
 				boolean inside = intersectionRow.intersectionsAfter(x) % 2 == 1;
-				for (Polygon o : polygons) { //check if we are inside a traced area
-					if (o.isNearBorder(x, y, segmentLength.get() * 3)) continue horizontal;
+
+				if (black != inside) { // either we are outside, and found a black pixel, or we are inside, and found a white pixel. Like XOR
+					for (Polygon o : polygons) { //check if we are near a traced area
+						if (o.isNearBorder(x, y, segmentLength.get() * 3)) continue horizontal;
 					/*
 					The tolerance in the line above had to be this large because the tracer would otherwise get stuck.
 					For example, if there is a very sharp v-shape, the tracer
 					 */
-				}
+					}
 
-				if (black != inside) { // either we are outside, and found a black pixel, or we are inside, and found a white pixel. Like XOR
 					System.out.println("tracing...");
 					Polygon polygon = traceOutline(new Point2D(x, y), image, black);
 					polygons.add(polygon);
@@ -137,12 +151,20 @@ public class Tracer {
 					System.out.println("traced");
 				}
 
-				if(count>100) return polygons;
+				if (count > 100) return polygons;
 
 			}
 		}
 		System.out.println("Traced all!" + count);
 		return polygons;
+	}
+
+	private double brightness(int argb) {
+		int b = argb & 0xFF;
+		int g = (argb >> 8) & 0xFF;
+		int r = (argb >> 16) & 0xFF; // i hope this stuff is right
+
+		return ((double) (r + g + b)) / 256 / 3;
 	}
 
 	private Polygon traceOutline(Point2D point, Image image, boolean black) {
@@ -162,26 +184,26 @@ public class Tracer {
 
 			double right = direction + initialAngle.get();
 			int i = 0;
-			while(!touchesBlack(image, point, right))  { // the right angle must be dipped in black. these two loops are needed to support unusually sharp angles.
-				right+=initialAngle.get()/10;
-				if(i++>20) break; // shouldn't happen, but just in case...
+			while (!touchesBlack(image, point, right)) { // the right angle must be dipped in black. these two loops are needed to support unusually sharp angles.
+				right += initialAngle.get() / 10;
+				if (i++ > 20) break; // shouldn't happen, but just in case...
 			}
 
 			double left = direction - initialAngle.get();
 			i = 0;
-			while(touchesBlack(image, point, left))  { // the left angle must initially not touch black
-				left-=initialAngle.get()/10;
-				if(i++>20) break; // shouldn't happen, but just in case...
+			while (touchesBlack(image, point, left)) { // the left angle must initially not touch black
+				left -= initialAngle.get() / 10;
+				if (i++ > 20) break; // shouldn't happen, but just in case...
 			}
 
 			while (right - left > accuracy.get()) {
 				double middle = (right + left) / 2;
 				if (touchesBlack(image, point, middle)) {
 					//right = middle; // actual binarysearch
-					right=(right+middle)/2; // slowed down to minimize jumping over thin lines
+					right = (right + middle) / 2; // slowed down to minimize jumping over thin lines
 				} else {
 //					left = middle; // actual binarysearch
-					left = (left+middle)/2;
+					left = (left + middle) / 2;
 				}
 			}
 			point = new Point2D(
@@ -233,8 +255,8 @@ public class Tracer {
 			// x = my + c
 			double offset = start.getX() - slope * start.getY(); // this is the c
 			if (dy > 0) { // goin' down
-				for (double y = start.getY() + ignoredPixels.get()*dy;
-					 y <= start.getY() + dy * length + additionalPixels.get()*dy;
+				for (double y = start.getY() + ignoredPixels.get() * dy;
+					 y <= start.getY() + dy * length + additionalPixels.get() * dy;
 					 y++) {
 					double x = slope * y + offset;
 					if (inBounds(x, y, image) && reader.getColor((int) x, (int) y).getBrightness() < threshold.get()) {
@@ -242,8 +264,8 @@ public class Tracer {
 					}
 				}
 			} else { // goin' up
-				for (double y = start.getY() + ignoredPixels.get()*dy;
-					 y >= start.getY() + dy * length + additionalPixels.get()*dy;
+				for (double y = start.getY() + ignoredPixels.get() * dy;
+					 y >= start.getY() + dy * length + additionalPixels.get() * dy;
 					 y--) {
 					double x = slope * y + offset;
 					if (inBounds(x, y, image) && reader.getColor((int) x, (int) y).getBrightness() < threshold.get()) {
@@ -256,8 +278,8 @@ public class Tracer {
 			// y = mx + c
 			double offset = start.getY() - slope * start.getX(); // this is the c
 			if (dx > 0) { // goin' right
-				for (double x = start.getX() + ignoredPixels.get()*dx;
-					 x <= start.getX() + dx * length + additionalPixels.get()*dx;
+				for (double x = start.getX() + ignoredPixels.get() * dx;
+					 x <= start.getX() + dx * length + additionalPixels.get() * dx;
 					 x++) {
 					double y = slope * x + offset;
 					if (inBounds(x, y, image) && reader.getColor((int) x, (int) y).getBrightness() < threshold.get()) {
@@ -266,7 +288,7 @@ public class Tracer {
 					}
 				}
 			} else { // goin' left
-				for (double x = start.getX() + ignoredPixels.get()*dx; x >= start.getX() + dx * length + additionalPixels.get()*dx; x--) {
+				for (double x = start.getX() + ignoredPixels.get() * dx; x >= start.getX() + dx * length + additionalPixels.get() * dx; x--) {
 					double y = slope * x + offset;
 					if (inBounds(x, y, image) && reader.getColor((int) x, (int) y).getBrightness() < threshold.get()) {
 						return true;
@@ -281,9 +303,7 @@ public class Tracer {
 		if (x < 0) return false;
 		if (y < 0) return false;
 		if (x >= image.getWidth()) return false;
-		if (y >= image.getHeight()) return false;
-
-		return true;
+		return !(y >= image.getHeight());
 	}
 
 	@Deprecated

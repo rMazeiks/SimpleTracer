@@ -45,7 +45,7 @@ public class Segment2D {
 	}
 
 	/**
-	 * Given three colinear points p, q, r, the function checks if
+	 * Given three collinear points p, q, r, the function checks if
 	 * point q lies on segment segment 'pr'
 	 *
 	 * @param p
@@ -61,7 +61,7 @@ public class Segment2D {
 	/**
 	 * To find orientation of ordered triplet (p, q, r).
 	 * The function returns following values
-	 * 0 --> p, q and r are colinear
+	 * 0 --> p, q and r are collinear
 	 * 1 --> Clockwise
 	 * 2 --> Counterclockwise
 	 */
@@ -71,7 +71,7 @@ public class Segment2D {
 		int val = (int) ((q.getY() - p.getY()) * (r.getX() - q.getX()) -
 				(q.getX() - p.getX()) * (r.getY() - q.getY()));
 
-		if (val == 0) return 0;  // colinear
+		if (val == 0) return 0;  // collinear
 
 		return (val > 0) ? 1 : 2; // clock or counterclock wise
 	}
@@ -148,19 +148,18 @@ public class Segment2D {
 			return true;
 
 		// Special Cases
-		// p1, q1 and p2 are colinear and p2 lies on segment p1q1
+		// p1, q1 and p2 are collinear and p2 lies on segment p1q1
 		if (o1 == 0 && onSegment(p1, p2, q1)) return true;
 
-		// p1, q1 and q2 are colinear and q2 lies on segment p1q1
+		// p1, q1 and q2 are collinear and q2 lies on segment p1q1
 		if (o2 == 0 && onSegment(p1, q2, q1)) return true;
 
-		// p2, q2 and p1 are colinear and p1 lies on segment p2q2
+		// p2, q2 and p1 are collinear and p1 lies on segment p2q2
 		if (o3 == 0 && onSegment(p2, p1, q2)) return true;
 
-		// p2, q2 and q1 are colinear and q1 lies on segment p2q2
-		if (o4 == 0 && onSegment(p2, q1, q2)) return true;
+		// p2, q2 and q1 are collinear and q1 lies on segment p2q2
+		return o4 == 0 && onSegment(p2, q1, q2);
 
-		return false; // Doesn't fall in any of the above cases
 	}
 
 	/**
@@ -195,9 +194,7 @@ public class Segment2D {
 
 		double fraction = (y - smallY) / (largeY - smallY);  // maps smallY-largeY to 0-1
 		double intersectX = (x2 - x1) * fraction + x1; // maps 0-1 to x1-x2
-		if (intersectX < x) return false; // intersects to the left of the ray; no good
-
-		return true;
+		return !(intersectX < x);
 	}
 
 	/**
